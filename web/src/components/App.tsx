@@ -4,9 +4,6 @@ import '../styles/global.css'
 import { Header } from './Header'
 import { SummaryTable } from './SummaryTable'
 
-import logoImage from '../assets/logo.svg'
-import { Plus } from 'phosphor-react'
-
 export function App() {
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
