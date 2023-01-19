@@ -1,8 +1,8 @@
-import '../styles/global.css'
+import './styles/global.css'
 
 //Components
-import { Header } from './Header'
-import { SummaryTable } from './SummaryTable'
+import { Header } from './components/Header'
+import { SummaryTable } from './components/SummaryTable'
 
 export function App() {
   return (

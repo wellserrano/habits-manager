@@ -1,4 +1,5 @@
 import { View, Text, ScrollView } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 //Components
 import { Header } from '../components/Header'
@@ -13,6 +14,9 @@ const minimumSummaryDatesSize = 18 * 5;
 const amounDaysToFill = minimumSummaryDatesSize - summaryDates.length +1
 
 export function Home(){
+
+  const { navigate } = useNavigation();
+
   return (
     <View className='flex-1 bg-background px-8 pt-16'>
 
@@ -41,6 +45,7 @@ export function Home(){
             summaryDates.map( date => (
               <HabitDay
                 key={ date.toISOString() }
+                onPress={() => navigate('habit', { date: date.toISOString() })}
               />
             ))
           }
@@ -48,6 +53,7 @@ export function Home(){
             amounDaysToFill > 0 &&
             Array.from({ length: amounDaysToFill }).map((_, i) => (
               <View
+                key={i}
                 className='bg-zinc-900 rounded-lg border-2 m-1 border-zinc-800 opacity-40'
                 style={{ width: DAY_SIZE, height: DAY_SIZE }}
               />
