@@ -34,7 +34,7 @@ export function New() {
   async function handleCreateNewHabit() {
     try {
       if (!title.trim() || weekDays.length === 0) {
-        Alert.alert('Novo hábito', 'Informe um novo hábito e os dias de recorrência')
+        return Alert.alert('Novo hábito', 'Informe um novo hábito e os dias de recorrência')
       }
 
 
@@ -45,8 +45,6 @@ export function New() {
 
       setTitle('')
       setWeekDays([]);
-
-      Alert.alert("Novo hábito", "Hábito criado com sucesso")
 
     } catch (error) {
       console.log(error)
