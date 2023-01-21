@@ -8,6 +8,7 @@ interface Props {
 
 export function ProgressBar({ progress = 0 }: Props) {
   const sharedProgress = useSharedValue(progress)
+  console.log(progress)
   
   const style = useAnimatedStyle(() => {
     return {

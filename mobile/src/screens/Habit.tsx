@@ -1,9 +1,9 @@
 //native
 import { ScrollView, View, Text, Alert } from "react-native";
-import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 
 //hooks
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 
 //components
 import { Loading } from "../components/Loading";
@@ -43,13 +43,13 @@ export function Habit() {
     ? generateProgressPercentage(dayInfo?.possibleHabits.length, completedHabits.length) 
     : 0;
     
-    const route = useRoute();
-    const { date } = route.params as Params;
-    
-    const parsedDate = dayjs(date);
-    const weekDay = parsedDate.format('dddd');
-    const monthDay = parsedDate.format('DD/MM');
-    const isDateInPast = parsedDate.endOf('day').isBefore(new Date());
+  const route = useRoute();
+  const { date } = route.params as Params;
+  
+  const parsedDate = dayjs(date);
+  const weekDay = parsedDate.format('dddd');
+  const monthDay = parsedDate.format('DD/MM');
+  const isDateInPast = parsedDate.endOf('day').isBefore(new Date());
 
   async function fetchHabits() {
     try {
@@ -82,15 +82,17 @@ export function Habit() {
     }
   }
 
-  useFocusEffect(useCallback(() => {
+  useEffect(() => {
     fetchHabits();
-  },[]));
+  },[])
 
   if (loading) {
     return (
       <Loading />
     )
   }
+
+  
   
   return (
     <View className="flex-1 bg-background px-8 pt-16">
@@ -112,18 +114,23 @@ export function Habit() {
 
         <View className="mt-6">
             {
-              dayInfo?.possibleHabits.length ?
-              dayInfo?.possibleHabits.map(habit => (
-                <Checkbox className={clsx("mt-6", {
-                  ["opacity-50"] : isDateInPast
-                })}
-                  key={ habit.id }
-                  title={ habit.title }
-                  disabled={ isDateInPast }
-                  checked={ completedHabits.includes(habit.id) }
-                  onPress={ () => handleToggleHabit(habit.id) }
-                />          
-              ))
+              !dayInfo?.possibleHabits.length && isDateInPast ?
+                false
+              
+
+              : dayInfo?.possibleHabits.length ?
+              
+                dayInfo?.possibleHabits.map(habit => (
+                  <Checkbox className={clsx("mt-6", {
+                    ["opacity-50"] : isDateInPast
+                  })}
+                    key={ habit.id }
+                    title={ habit.title }
+                    disabled={ isDateInPast }
+                    checked={ completedHabits.includes(habit.id) }
+                    onPress={ () => handleToggleHabit(habit.id) }
+                  />          
+                ))
               :
               <HabitsMessage messageType="empty" /> 
             }         
