@@ -1,4 +1,5 @@
 import './styles/global.css'
+import './lib/dayjs'
 
 //Components
 import { Header } from './components/Header'
