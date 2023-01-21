@@ -1,9 +1,9 @@
 //native
 import { ScrollView, View, Text, Alert } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useFocusEffect } from "@react-navigation/native";
 
 //hooks
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 //components
 import { Loading } from "../components/Loading";
@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 
 //server
 import { api } from "../lib/axios";
+import clsx from "clsx";
 
 interface Params {
   date: string;
@@ -41,13 +42,14 @@ export function Habit() {
   const habitsProgress = dayInfo?.possibleHabits.length
     ? generateProgressPercentage(dayInfo?.possibleHabits.length, completedHabits.length) 
     : 0;
-
-  const route = useRoute();
-  const { date } = route.params as Params;
-
-  const parsedDate = dayjs(date);
-  const weekDay = parsedDate.format('dddd');
-  const monthDay = parsedDate.format('DD/MM');
+    
+    const route = useRoute();
+    const { date } = route.params as Params;
+    
+    const parsedDate = dayjs(date);
+    const weekDay = parsedDate.format('dddd');
+    const monthDay = parsedDate.format('DD/MM');
+    const isDateInPast = parsedDate.endOf('day').isBefore(new Date());
 
   async function fetchHabits() {
     try {
@@ -66,16 +68,23 @@ export function Habit() {
   };
 
   async function handleToggleHabit(habitId: string) {
-    if (completedHabits.includes(habitId)){
-      setCompletedHabits(prevState => prevState.filter(habit => habit !== habitId))
-    } else {
-      setCompletedHabits(prevState => [...prevState, habitId])
+    try {
+      await api.patch(`/habits/${habitId}/toggle`)
+      
+      if (completedHabits.includes(habitId)){
+        setCompletedHabits(prevState => prevState.filter(habit => habit !== habitId))
+      } else {
+        setCompletedHabits(prevState => [...prevState, habitId])
+      }
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Ops', 'não foi possível alterar o status do hábito')
     }
   }
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     fetchHabits();
-  },[])
+  },[]));
 
   if (loading) {
     return (
@@ -105,16 +114,27 @@ export function Habit() {
             {
               dayInfo?.possibleHabits.length ?
               dayInfo?.possibleHabits.map(habit => (
-                <Checkbox 
+                <Checkbox className={clsx("mt-6", {
+                  ["opacity-50"] : isDateInPast
+                })}
                   key={ habit.id }
                   title={ habit.title }
+                  disabled={ isDateInPast }
                   checked={ completedHabits.includes(habit.id) }
                   onPress={ () => handleToggleHabit(habit.id) }
                 />          
               ))
               :
               <HabitsMessage messageType="empty" /> 
-            }            
+            }         
+
+            {
+              isDateInPast &&
+
+              <Text className="text-white mt-10 text-center">
+                Você não pode alterar a atividade de hábitos passados
+              </Text>
+            }   
           
         </View>
 
