@@ -37,6 +37,7 @@ export function New() {
         Alert.alert('Novo hábito', 'Informe um novo hábito e os dias de recorrência')
       }
 
+
       await api.post('/habits', {
         title,
         weekDays
@@ -94,6 +95,7 @@ export function New() {
 
         <TouchableOpacity
           className="w-full h-14 flex-row items-center justify-center bg-green-600 rounded-md mt-6"
+          onPress={ handleCreateNewHabit }
           activeOpacity={0.7}
         >
           <Feather
